@@ -11,7 +11,7 @@ resource "aws_instance" "mongodb" {
   #   })
   tags = merge(
     {
-      Name = "${local.common_name}-bastion"
+      Name = "${local.common_name}-mongodb"
     },
     local.common_tags
   )
