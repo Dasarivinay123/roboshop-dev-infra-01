@@ -2,10 +2,9 @@ data "aws_ssm_parameter" "mongodb_sg_id" {
   name = "/${var.project}/${var.environment}/mongodb_sg_id"
 }
 
-data "aws_ssm_parameter" "databse_subnet_id" {
-   name  = "/${var.project}/${var.environment}/database-subnet-ids"
+data "aws_ssm_parameter" "database_subnet_ids" {
+  name = "/${var.project}/${var.environment}/database-subnet-ids"
 }
-
 data "aws_ami" "joindevops" {
   most_recent = true
   owners      = ["973714476881"]
