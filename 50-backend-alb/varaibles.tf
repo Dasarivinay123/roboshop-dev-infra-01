@@ -13,6 +13,3 @@ variable "zone_id" {
 variable "domain_name" {
   default = "vinaydevops.online"
 }
-variable "mysql_root_password" {
-  type = string
-}
