@@ -27,13 +27,13 @@ resource "terraform_data" "mongodb" {
     host     = aws_instance.mongodb.private_ip
   }
   provisioner "file" {
-    source = "bootstrap.sh"
+    source      = "bootstrap.sh"
     destination = "/tmp/bootstrap.sh"
   }
   provisioner "remote-exec" {
-   inline = [ 
-        "chmod +x /tmp/bootstrap.sh",
-        "sudo sh /tmp/bootstrap.sh mongodb ${var.environment}"
+    inline = [
+      "chmod +x /tmp/bootstrap.sh",
+      "sudo sh /tmp/bootstrap.sh mongodb ${var.environment}"
     ]
   }
 }
@@ -67,13 +67,13 @@ resource "terraform_data" "redis" {
     host     = aws_instance.redis.private_ip
   }
   provisioner "file" {
-    source = "bootstrap.sh"
+    source      = "bootstrap.sh"
     destination = "/tmp/bootstrap.sh"
   }
   provisioner "remote-exec" {
-   inline = [ 
-        "chmod +x /tmp/bootstrap.sh",
-        "sudo sh /tmp/bootstrap.sh redis ${var.environment}"
+    inline = [
+      "chmod +x /tmp/bootstrap.sh",
+      "sudo sh /tmp/bootstrap.sh redis ${var.environment}"
     ]
   }
 }
@@ -106,13 +106,53 @@ resource "terraform_data" "rabbitmq" {
     host     = aws_instance.rabbitmq.private_ip
   }
   provisioner "file" {
-    source = "bootstrap.sh"
+    source      = "bootstrap.sh"
     destination = "/tmp/bootstrap.sh"
   }
   provisioner "remote-exec" {
-   inline = [ 
-        "chmod +x /tmp/bootstrap.sh",
-        "sudo sh /tmp/bootstrap.sh rabbitmq ${var.environment}"
+    inline = [
+      "chmod +x /tmp/bootstrap.sh",
+      "sudo sh /tmp/bootstrap.sh rabbitmq ${var.environment}"
+    ]
+  }
+}
+resource "aws_instance" "mysql" {
+  ami           = data.aws_ami.joindevops.id
+  instance_type = "t3.micro"
+  # Pass the security group ID as a list
+  vpc_security_group_ids = [local.mysql_sg_id]
+  subnet_id              = local.databse_subnet_id
+  iam_instance_profile = aws_iam_instance_profile.mysql.name
+  #   key_name               = "daws-key"
+  #   user_data = templatefile("${path.module}/bastion.sh.tftpl", {
+  #     partition_number = 4
+  #     extend_size      = 30
+  #   })
+  tags = merge(
+    {
+      Name = "${local.common_name}-mysql"
+    },
+    local.common_tags
+  )
+}
+resource "terraform_data" "mysql" {
+  triggers_replace = [
+    aws_instance.mysql.id
+  ]
+  connection {
+    type     = "ssh"
+    user     = "ec2-user"
+    password = "DevOps321"
+    host     = aws_instance.rabbitmq.private_ip
+  }
+  provisioner "file" {
+    source      = "bootstrap.sh"
+    destination = "/tmp/bootstrap.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/bootstrap.sh",
+      "sudo sh /tmp/bootstrap.sh mysql ${var.environment}"
     ]
   }
 }
