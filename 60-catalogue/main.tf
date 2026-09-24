@@ -45,7 +45,7 @@ resource "aws_ec2_instance_state" "catalogue" {
 resource "aws_ami_from_instance" "catalogue" {
   name               = "${local.common_name}-catalogue-${var.app_version}-${aws_instance.catalogue.id}"
   source_instance_id = aws_instance.catalogue.id
-  depends_on = [ aws_ec2_instance_state.catalogue ]
+  depends_on         = [aws_ec2_instance_state.catalogue]
 
   tags = merge(
     {
@@ -54,3 +54,56 @@ resource "aws_ami_from_instance" "catalogue" {
     local.common_tags
   )
 }
+resource "aws_launch_template" "catalogue" {
+  name                                 = "example"
+  image_id                             = aws_ami_from_instance.catalogue.id
+  instance_initiated_shutdown_behavior = "terminate"
+  instance_type                        = "t2.micro"
+  vpc_security_group_ids               = [local.catalogue_sg_id]
+  default_version                      = true
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = merge(
+      {
+        Name = "${local.common_name}-catalogue-${var.app_version}-${aws_instance.catalogue.id}"
+      },
+      local.common_tags
+    )
+  }
+  tag_specifications {
+    resource_type = "volume"
+    tags = merge(
+      {
+        Name = "${local.common_name}-catalogue-${var.app_version}-${aws_instance.catalogue.id}"
+      },
+      local.common_tags
+    )
+  }
+  tags = merge(
+    {
+      Name = "${local.common_name}-catalogue-${var.app_version}-${aws_instance.catalogue.id}"
+    },
+    local.common_tags
+  )
+
+}
+
+resource "aws_lb_target_group" "catalogue" {
+  name     = "${local.common_name}-catalogue"
+  port     = 8080
+  protocol = "HTTP"
+  vpc_id   = local.vpc_id
+  deregistration_delay = 30
+  health_check {
+    healthy_threshold   = 2
+    interval            = 10
+    matcher             = "200-299"
+    path                = "/health"
+    port                = 8080
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 2
+  }
+}
+

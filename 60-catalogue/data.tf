@@ -4,7 +4,9 @@ data "aws_ssm_parameter" "catalogue_sg_id" {
 data "aws_ssm_parameter" "private_subnet_ids" {
   name = "/${var.project}/${var.environment}/private-subnet-ids"
 }
-
+data "aws_ssm_parameter" "vpc_id" {
+   name  = "/${var.project}/${var.environment}/vpc-id"
+}
 data "aws_ami" "joindevops" {
   most_recent = true
   owners      = ["973714476881"]
