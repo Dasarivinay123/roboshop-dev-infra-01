@@ -48,6 +48,10 @@ data "aws_ssm_parameter" "bastion_sg_id" {
   name = "/${var.project}/${var.environment}/bastion_sg_id"
 }
 
+
+data "aws_ssm_parameter" "vpn_sg_id" {
+    name = "/${var.project}/${var.environment}/vpn_sg_id"
+}
 # Fetch the public IP address 
 data "http" "my_public_ip" {
   url = "https://ipv4.icanhazip.com"

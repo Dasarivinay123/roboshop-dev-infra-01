@@ -318,3 +318,41 @@ resource "aws_security_group_rule" "bastion_my_public_ip" {
   cidr_blocks       = ["${chomp(data.http.my_public_ip.response_body)}/32"]
   security_group_id = local.bastion_sg_id
 }
+
+# VPN
+resource "aws_security_group_rule" "vpn_public_1194" {
+  type              = "ingress"
+  from_port         = 1194
+  to_port           = 1194
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = local.vpn_sg_id
+}
+
+resource "aws_security_group_rule" "vpn_public_943" {
+  type              = "ingress"
+  from_port         = 943
+  to_port           = 943
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = local.vpn_sg_id
+}
+
+resource "aws_security_group_rule" "vpn_public_443" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = local.vpn_sg_id
+}
+
+resource "aws_security_group_rule" "vpn_ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  #cidr_blocks = ["${chomp(data.http.my_public_ip.response_body)}/32"]
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = local.vpn_sg_id
+}
