@@ -219,6 +219,15 @@ resource "aws_security_group_rule" "backend_alb_bastion" {
   security_group_id        = local.backend_alb_sg_id
 }
 
+resource "aws_security_group_rule" "backend_alb_vpn" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = local.vpn_sg_id
+  security_group_id = local.backend_alb_sg_id
+}
+
 #  backend_alb allowing connections from catalogue on port 80
 resource "aws_security_group_rule" "backend_alb_catalogue" {
   type                     = "ingress"
@@ -309,16 +318,25 @@ resource "aws_security_group_rule" "frontend_alb_http" {
   security_group_id = local.frontend_alb_sg_id
 }
 
-#  bastion allowing connections from myip
+# #  bastion allowing connections from myip
+# resource "aws_security_group_rule" "bastion_my_public_ip" {
+#   type              = "ingress"
+#   from_port         = 22
+#   to_port           = 22
+#   protocol          = "tcp"
+#   cidr_blocks       = ["${chomp(data.http.my_public_ip.response_body)}/32"]
+#   security_group_id = local.bastion_sg_id
+# }
+
 resource "aws_security_group_rule" "bastion_my_public_ip" {
   type              = "ingress"
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  cidr_blocks       = ["${chomp(data.http.my_public_ip.response_body)}/32"]
+  cidr_blocks = ["3.237.177.111/32"]
+  #source_security_group_id = local.vpn_sg_id
   security_group_id = local.bastion_sg_id
 }
-
 # VPN
 resource "aws_security_group_rule" "vpn_public_1194" {
   type              = "ingress"
