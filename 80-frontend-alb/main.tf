@@ -1,11 +1,11 @@
 resource "aws_lb" "frontend_alb" {
-  name               = "${local.common_name}-frontend-alb" #roboshop-dev-backend-alb
+  name               = "${local.common_name}-frontend-alb" #roboshop-dev-frontend-alb
   internal           = false
   load_balancer_type = "application"
   security_groups    = [local.frontend_alb_sg_id]
   subnets            = local.public_subnet_ids
 
-  enable_deletion_protection = false
+  enable_deletion_protection = false # usually true, false for testing purpose
 
   tags = merge(
     {
